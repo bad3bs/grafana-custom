@@ -33,13 +33,19 @@ RUN if [ $GF_INSTALL_IMAGE_RENDERER_PLUGIN = "true" ]; then \
         plugins install grafana-image-renderer; \
 fi
 
-ARG GF_INSTALL_PLUGINS="grafana-piechart-panel,alexanderzobnin-zabbix-app,vertamedia-clickhouse-datasource,"
+ARG GF_INSTALL_PLUGINS="grafana-piechart-panel,alexanderzobnin-zabbix-app,vertamedia-clickhouse-datasource,praj-ams-datasource,"
 
 RUN if [ ! -z "${GF_INSTALL_PLUGINS}" ]; then \
     OLDIFS=$IFS; \
-        IFS=','; \
+    IFS=','; \
     for plugin in ${GF_INSTALL_PLUGINS}; do \
         IFS=$OLDIFS; \
-        grafana-cli --pluginsDir "$GF_PATHS_PLUGINS" plugins install ${plugin}; \
-    done; \
+        if expr match "$plugin" '.*\;.*'; then \
+            pluginUrl=$(echo "$plugin" | cut -d';' -f 1); \
+            pluginInstallFolder=$(echo "$plugin" | cut -d';' -f 2); \
+            grafana-cli --pluginUrl ${pluginUrl} --pluginsDir "${GF_PATHS_PLUGINS}" plugins install "${pluginInstallFolder}"; \
+        else \
+            grafana-cli --pluginsDir "${GF_PATHS_PLUGINS}" plugins install ${plugin}; \
+        fi \
+    done \
 fi
