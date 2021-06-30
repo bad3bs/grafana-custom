@@ -33,7 +33,7 @@ RUN if [ $GF_INSTALL_IMAGE_RENDERER_PLUGIN = "true" ]; then \
         plugins install grafana-image-renderer; \
 fi
 
-ARG GF_INSTALL_PLUGINS="alexanderzobnin-zabbix-app,vertamedia-clickhouse-datasource,praj-ams-datasource,"
+ARG GF_INSTALL_PLUGINS="alexanderzobnin-zabbix-app,vertamedia-clickhouse-datasource,praj-ams-datasource,snuids-trafficlights-panel,"
 
 RUN if [ ! -z "${GF_INSTALL_PLUGINS}" ]; then \
     OLDIFS=$IFS; \
